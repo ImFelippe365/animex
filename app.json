@@ -1,0 +1,53 @@
+{
+  "expo": {
+    "name": "AnimeX",
+    "slug": "AnimeX",
+    "version": "2.1",
+    "orientation": "default",
+    "backgroundColor": "#1b1b1b",
+    "androidStatusBar": {
+      "backgroundColor": "#000000",
+      "hidden": false,
+      "translucent": true,
+      "barStyle": "dark-content"
+    },
+    "platforms": [
+      "android"
+    ],
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1b1b1b"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "requireFullScreen": true
+    },
+    "android": {
+      "userInterfaceStyle": "light",
+      "package": "com.imfelippe365.AnimeX",
+      "icon": "./assets/icon.png",
+      "splash": {
+        "image": "./assets/splash.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#1b1b1b"
+      },
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#1b1b1b"
+      }
+    },
+    "androidNavigationBar": {
+      "barStyle": "dark-content",
+      "backgroundColor": "#ff0000",
+      "visible": "sticky-immersive"
+    }
+  }
+}
