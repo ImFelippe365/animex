@@ -322,7 +322,7 @@ export function AnimeDetailsView() {
                     }
 
 
-                    <Text style={{ color: 'white' }}>{(position / 1000) * 80 / 100}</Text>
+                    {/* <Text style={{ color: 'white' }}>{(position / 1000) * 80 / 100}</Text> */}
 
 
                 </View>

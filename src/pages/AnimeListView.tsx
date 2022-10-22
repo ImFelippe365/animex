@@ -30,9 +30,6 @@ export function AnimeListView() {
             const episodes = await loadRecentAnimes();
             const recentEpisodes: Episode[] = episodes as Episode[];
 
-            if (recentEpisodes[0].title == 'Aviso Importante AnimeTV!!')
-                recentEpisodes.shift();
-
             setEpisodes(recentEpisodes);
         }
 

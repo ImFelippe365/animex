@@ -26,6 +26,7 @@ import { useNavigation } from '@react-navigation/core';
 import { SearchBar } from '../components/SearchBar';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { api } from '../services/api';
 
 export function Home() {
 
@@ -40,23 +41,23 @@ export function Home() {
     //const [disableBackgroundButtons, setDisableBackgroundButtons] = useState(false);
 
     useEffect(() => {
-        
-        
-        async function getRecentAnimes(){
-            try {
-                const animes = await loadRecentAnimes();
-                const recentAnimes:Episode[] = animes as Episode[]; 
 
-                if(recentAnimes[0].title == 'Aviso Importante AnimeTV!!')
-                recentAnimes?.shift();
-                
-                setRecentAnimes(animes);
+
+        async function getRecentAnimes() {
+            try {
+                const { data } = await api.get(`?latest`);
+                console.log(data)
+
+                setRecentAnimes(data);
+
             } catch (Error) {
                 console.log(Error)
             }
         }
 
-        async function getPopularAnimes(){
+
+
+        async function getPopularAnimes() {
             try {
                 const animes = await loadPopularAnimes();
                 setPopularAnimes(animes);
@@ -67,10 +68,10 @@ export function Home() {
 
         getRecentAnimes();
         getPopularAnimes();
-        
+
     }, [])
 
-    async function findSearchResults (searchText: string){
+    async function findSearchResults(searchText: string) {
         const search = searchText.normalize('NFD').replace(/([\u0300-\u036f]|[^0-9a-zA-Z])/g, '_').toLowerCase();
         try {
             const animes = await loadResultsOfSearch(search);
@@ -81,67 +82,67 @@ export function Home() {
         }
     };
 
-    function handleSearch(search: NativeSyntheticEvent<TextInputSubmitEditingEventData>){
+    function handleSearch(search: NativeSyntheticEvent<TextInputSubmitEditingEventData>) {
         const searchText: string = search.nativeEvent.text as string;
         navigator.navigate('SearchResultsView', { searchText })
     }
 
-    function handleChangeSearch(){
+    function handleChangeSearch() {
         setSearchResults(undefined)
         setIsSearching(!isSearching)
     }
 
-    function handleListView(){
+    function handleListView() {
         navigator.navigate('AnimeListView');
     }
 
-    function handleAnimeView(id: string, animeId: string){
+    function handleAnimeView(id: string, animeId: string) {
         navigator.navigate('AnimeDetailsView', { id, animeId })
     }
 
     return (
-        <ScrollView showsVerticalScrollIndicator={false} scrollEnabled={false} style={{backgroundColor: 'black'}}>
+        <ScrollView showsVerticalScrollIndicator={false} scrollEnabled={false} style={{ backgroundColor: 'black' }}>
             <StatusBar backgroundColor={colors.red} translucent />
             <SafeAreaView style={styles.container}>
                 <View style={styles.header}>
                     {
                         isSearching ?
-                        <>
-                        <View style={styles.headerSearchbar}>
-                            <SearchBar 
-                                returnKeyType="search"
-                                onSubmitEditing={handleSearch}
-                                onChangeText={findSearchResults}
-                            />
-                            <TouchableOpacity onPress={handleChangeSearch}>
-                                <MaterialIcons
-                                    name='close'
-                                    size={24}
-                                    style={styles.closeIcon}
-                                />
-                            </TouchableOpacity>
-                        </View>
-                        {
-                            searchResults ? 
-                            <View style={styles.headerResults}>
-                            <FlatList
-                                data={searchResults}
-                                showsVerticalScrollIndicator={false}
-                                renderItem={(item) => (
-                                    <TouchableOpacity onPress={() => {handleAnimeView('', item.item.id)}}>
-                                        <Text style={styles.headerResultsText}>{item.item.category_name}</Text>
+                            <>
+                                <View style={styles.headerSearchbar}>
+                                    <SearchBar
+                                        returnKeyType="search"
+                                        onSubmitEditing={handleSearch}
+                                        onChangeText={findSearchResults}
+                                    />
+                                    <TouchableOpacity onPress={handleChangeSearch}>
+                                        <MaterialIcons
+                                            name='close'
+                                            size={24}
+                                            style={styles.closeIcon}
+                                        />
                                     </TouchableOpacity>
-                                )}
-                            />
-                        </View> : <View></View>
-                        }
-                        
-                        </>
+                                </View>
+                                {
+                                    searchResults ?
+                                        <View style={styles.headerResults}>
+                                            <FlatList
+                                                data={searchResults}
+                                                showsVerticalScrollIndicator={false}
+                                                renderItem={(item) => (
+                                                    <TouchableOpacity onPress={() => { handleAnimeView('', item.item.id) }}>
+                                                        <Text style={styles.headerResultsText}>{item.item.category_name}</Text>
+                                                    </TouchableOpacity>
+                                                )}
+                                            />
+                                        </View> : <View></View>
+                                }
 
-                        :
-                        <>
-                            <Text style={styles.headerTitle}>AnimeX</Text>
-                            
+                            </>
+
+                            :
+                            <>
+                                <Text style={styles.headerTitle}>AnimeX</Text>
+
                                 <MaterialIcons
                                     style={styles.headerSearch}
                                     name="search"
@@ -149,8 +150,8 @@ export function Home() {
                                     color={colors.white}
                                     onPress={handleChangeSearch}
                                 />
-                            
-                        </>
+
+                            </>
                     }
                 </View>
 
@@ -169,23 +170,25 @@ export function Home() {
                 <View style={styles.recentAnimesView}>
                     <FlatList
                         data={recentAnimes}
-                        keyExtractor={(item, index) => index.toString()}
+                        keyExtractor={(item, index) => item.video_id}
                         showsHorizontalScrollIndicator={false}
-                        renderItem={({ item }) => (
-                            <TouchableOpacity 
-                                //disabled={disableBackgroundButtons} 
-                                onPress={() => handleAnimeView(item.video_id, item.category_id)}
-                            >
-                                <CardAnimePrimary 
-                                    title={String(item?.title)} 
-                                    cape={String(item?.category_image)}
-                                    style={styles.animeMargin}
-                                />
-                            </TouchableOpacity>
-                        )}
+                        renderItem={({ item }) => {
+                            return (
+                                <TouchableOpacity
+                                    //disabled={disableBackgroundButtons} 
+                                    onPress={() => handleAnimeView(item.video_id, item.category_id)}
+                                >
+                                    <CardAnimePrimary
+                                        title={String(item?.category_name)}
+                                        cape={String(item?.category_image)}
+                                        style={styles.animeMargin}
+                                    />
+                                </TouchableOpacity>
+                            )
+                        }}
                         //keyExtractor={item => String(item?.category_id)}
                         horizontal
-                        
+
                     />
                 </View>
 
@@ -204,17 +207,17 @@ export function Home() {
                         keyExtractor={(item, index) => index.toString()}
                         horizontal
                         renderItem={({ item }) => (
-                            <TouchableOpacity 
+                            <TouchableOpacity
                                 //disabled={disableBackgroundButtons} 
-                                onPress={() => handleAnimeView('',item.id)}
+                                onPress={() => handleAnimeView('', item.id)}
                             >
-                                <CardAnimePrimary 
-                                    title={String(item?.category_name)} 
+                                <CardAnimePrimary
+                                    title={String(item?.category_name)}
                                     cape={String(item?.category_image)}
                                     style={styles.animeMargin}
                                 />
                             </TouchableOpacity>
-                            
+
                         )}
                     />
 
@@ -316,11 +319,11 @@ const styles = StyleSheet.create({
         width: '100%',
         borderRadius: 32,
         paddingHorizontal: 16,
-        
+
     },
 
     searchBarContainerText: {
-        
+
     },
 
     searchBarText: {

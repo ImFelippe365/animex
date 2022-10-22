@@ -4,10 +4,10 @@ import { getAnime, getEpisodesPerCategory, getLastAnimes, getPopularAnimes, hand
 import { getEpisode, getAllEpisodes } from './../services/api';
 
 export interface Episode {
-
+  title?: string,
   video_id: string,
   category_id: string,
-  title: string,
+  category_name: string,
   category_image: string,
 
 }[]
@@ -83,10 +83,8 @@ export interface AllEpisodes {
 export async function loadRecentAnimes(): Promise<Episode[] | undefined> {
   try {
 
-    const lastAnimes = await getLastAnimes;
-    const recentEpisodes: Episode[] = lastAnimes.data as Episode[];
-
-    return recentEpisodes;
+    const { data } = await getLastAnimes;
+    return data;
 
 
   } catch (Error) {

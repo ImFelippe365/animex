@@ -111,7 +111,7 @@ export function VideoPlayer({ name, episode, click, style, uri, getPosition, get
                     }
                     console.log(item, episode)
                 })
-                
+
             }
 
             setShouldPlay(true);
@@ -123,10 +123,11 @@ export function VideoPlayer({ name, episode, click, style, uri, getPosition, get
 
 
     useEffect(() => {
+        console.log(uri)
         setInitialPosition(0);
         setDuration(0);
         loadEpisodeState();
-        return () => { 
+        return () => {
             mountedRef.current = false
         }
     }, [uri])
@@ -151,12 +152,10 @@ export function VideoPlayer({ name, episode, click, style, uri, getPosition, get
                     loadEpisodeState();
                     showOptions();
                 }}
-                positionMillis={initialPosition}
                 shouldPlay={shouldPlay}
                 resizeMode="contain"
-                isLooping={false}
+                isLooping={true}
                 progressUpdateIntervalMillis={1000}
-
                 onPlaybackStatusUpdate={(statusUpdate: any) => {
                     if (statusUpdate.isLoaded) {
 
