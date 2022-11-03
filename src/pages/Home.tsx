@@ -12,7 +12,6 @@ import {
 
 } from 'react-native';
 
-
 import colors from '../styles/colors';
 import fonts from '../styles/fonts';
 
@@ -26,7 +25,7 @@ import { useNavigation } from '@react-navigation/core';
 import { SearchBar } from '../components/SearchBar';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { api } from '../services/api';
+import { api, getLastAnimes } from '../services/api';
 
 export function Home() {
 
@@ -41,21 +40,15 @@ export function Home() {
     //const [disableBackgroundButtons, setDisableBackgroundButtons] = useState(false);
 
     useEffect(() => {
-
-
         async function getRecentAnimes() {
             try {
-                const { data } = await api.get(`?latest`);
-                console.log(data)
+                const animes = await loadRecentAnimes();
 
-                setRecentAnimes(data);
-
+                setRecentAnimes(animes);
             } catch (Error) {
                 console.log(Error)
             }
         }
-
-
 
         async function getPopularAnimes() {
             try {
@@ -68,7 +61,6 @@ export function Home() {
 
         getRecentAnimes();
         getPopularAnimes();
-
     }, [])
 
     async function findSearchResults(searchText: string) {
@@ -76,6 +68,7 @@ export function Home() {
         try {
             const animes = await loadResultsOfSearch(search);
             const animeResult: Anime[] = animes as Anime[];
+
             setSearchResults(animeResult);
         } catch (Error) {
             console.log(Error)
@@ -170,16 +163,18 @@ export function Home() {
                 <View style={styles.recentAnimesView}>
                     <FlatList
                         data={recentAnimes}
-                        keyExtractor={(item, index) => item.video_id}
+                        keyExtractor={(item) => item.category_id}
                         showsHorizontalScrollIndicator={false}
                         renderItem={({ item }) => {
+                            console.log(item)
                             return (
                                 <TouchableOpacity
+                                    key={item.category_id}
                                     //disabled={disableBackgroundButtons} 
                                     onPress={() => handleAnimeView(item.video_id, item.category_id)}
                                 >
                                     <CardAnimePrimary
-                                        title={String(item?.category_name)}
+                                        title={String(item?.title)}
                                         cape={String(item?.category_image)}
                                         style={styles.animeMargin}
                                     />
@@ -204,10 +199,11 @@ export function Home() {
                     <FlatList
                         data={popularAnimes}
                         showsHorizontalScrollIndicator={false}
-                        keyExtractor={(item, index) => index.toString()}
+                        keyExtractor={(item) => item.id}
                         horizontal
                         renderItem={({ item }) => (
                             <TouchableOpacity
+                                key={item.id}
                                 //disabled={disableBackgroundButtons} 
                                 onPress={() => handleAnimeView('', item.id)}
                             >
@@ -222,12 +218,9 @@ export function Home() {
                     />
 
                 </View>
-
-
             </SafeAreaView>
         </ScrollView>
     )
-
 }
 
 const styles = StyleSheet.create({
@@ -237,6 +230,7 @@ const styles = StyleSheet.create({
     },
 
     header: {
+        position: 'relative',
         padding: 20,
         flexDirection: 'row',
         justifyContent: 'center',
@@ -348,14 +342,14 @@ const styles = StyleSheet.create({
         paddingBottom: 10,
         paddingHorizontal: 20,
         backgroundColor: '#1b1b1b',
-        marginTop: 50,
+        top: 80,
         left: 20,
         elevation: 1,
         borderBottomStartRadius: 16,
         borderBottomEndRadius: 16,
         height: 'auto',
-        maxHeight: 600
-
+        maxHeight: 600,
+        zIndex: 99
     },
 
     headerResultsText: {

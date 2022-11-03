@@ -2,15 +2,14 @@ import React, { useEffect, useState } from 'react';
 
 import {
     Image,
-    StyleSheet, Text, View
+    StyleSheet, Text, View, ViewProps
 } from 'react-native';
-import { RectButton, RectButtonProps } from 'react-native-gesture-handler';
 import colors from '../styles/colors';
 
 import fonts from '../styles/fonts';
 import test from '../assets/boruto.jpg'
 
-interface Anime extends RectButtonProps {
+interface Anime extends ViewProps {
     title: string,
     cape: string,
     capeWidth?: number,
@@ -50,15 +49,13 @@ export function CardAnimePrimary({ title, cape, capeWidth = 120, capeHeight = 20
     }
 
     return (
-        <RectButton style={styles.container} {...rest} >
-            <View>
-                <Image
-                    source={imageUrl}
-                    style={styles.Image}
-                />
-                <Text numberOfLines={1} style={styles.title}>{title}</Text>
-            </View>
-        </RectButton>
+        <View style={styles.container} {...rest}>
+            <Image
+                source={imageUrl}
+                style={styles.Image}
+            />
+            <Text numberOfLines={1} style={styles.title}>{title}</Text>
+        </View>
 
     )
 
